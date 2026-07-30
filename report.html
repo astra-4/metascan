@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Case File - MetaScan</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylehseet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body>
+    <div class="page">
+        <div class="nav">
+            <a class="brand" href="index.html">MetaScan</a>
+            <div class="nav-right">
+                <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☾</button>
+            </div>
+        </div>
+        <div class="report-wrap">
+            <div class="case-header">
+                <div class="case-title">Case File #<span id="caseNum">67</span></div>
+                <div class="case-sub">Evidence found in <span id="caseFileName">photo.jpg</span></div>
+            </div>
+
+            <div class="score-card">
+                <svg viewBox="0 0 200 120" class="guage">
+                    <path d="M 10 110 A 90 90 0 0 1 190 110" class="guage-track"></path>
+                    <path d="M 10 110 A 90 90 0 0 1 190 110" class="gauge-fill" id="gaugeFill"></path>
+                </svg>
+                <div class="gauge-number" id="scoreNum">--</div>
+                <div class="gauge-label">/ 100</div>
+                <div class="risk-badge" id="riskBadge">Checking...</div>
+                <div class="breakdown" id="breakdownList"></div>
+            </div>
+        </div>
+    </div>
+</body>
