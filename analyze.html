@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Analyzing... - MetaScan</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    </head>
+
+    <body>
+        <div class="page">
+            <div class="nav">
+                <a class="brand" href="index.html">MetaScan</a>
+            </div>
+
+            <div class="analyze-wrap">
+                <div class="analyze-title">Analyzing<span id="analyzeDots">...</span></div>
+                <div class="analyze-sub" id="analyzeSub">this can take a few seconds</div>
+
+                <ul class="check-list">
+                    <li id="stepMeta"><span class="dot"></span> Metadata</li>
+                    <li id="stepHidden"><span class="dot"></span> Hidden Information</li>
+                    <li id="stepVisual"><span class="dot"></span> Visual clues</li>
+                    <li id="stepRisk"><span class="dot"></span> Privacy risks</li>
+                </ul>
+            </div>
+        </div>
+
+        <canvas id="workCanvas" style="display:none;"></canvas>
+        <img id="workImg" style="display:none;">
+
+        <script src="script.js"></script>
+    </body>
+</html>
