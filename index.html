@@ -18,6 +18,24 @@
             <div class="hero">
                 <h1>Before you post that photo, know what it reveals</h1>
                 <p>Upload an image and see exactly what personal information is hidden inside it, then remove it in one click.</p>
+
+                <!-- dropzone -->
+                 <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                    <i class="corner t1"></i>
+                    <i class="corner tr"></i>
+                    <i class="corner bl"></i>
+                    <i class="corner br"></i>
+                    <div class="dropzone-title">Drop a photo here</div>
+                    <div class="filetypes-label">or</div>
+                    <button class="btn btn-primary" type="button">Choose a file</button>
+                    <input type="file" id="fileInput" accept="image/jpeg,image/png">
+                    <div class="filetypes">
+                        <span class="tag">JPG</span>
+                        <span class="tag">PNG</span>
+                        <span class="tag">HEIC</span>
+                    </div>
+                 </div>
+                 <div class="footer-note">Analysis runs in yoru browser. Nothing is uploaded to a server.</div>
             </div>
         </div>
     </body>

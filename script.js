@@ -18,3 +18,19 @@ function toggleTheme() {
         localStorage.setItem("theme", "dark");
     }
 }
+
+//sends user to analyzingation page
+function handleFile(file) {
+    if (file.type !="image/jpeg" && file.type != "image/png") {
+        alert("please upload a jpg or png for now");
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function() {
+        sessionStorage.setItem("pd_imageData", reader.result);
+        sessionStorage.setItem("pd_fileName", file.name);
+        window.location.href = "analyze.html";
+    };
+    reader.readAsDataURL(file);
+}
