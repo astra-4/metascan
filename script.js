@@ -34,3 +34,15 @@ function handleFile(file) {
     };
     reader.readAsDataURL(file);
 }
+
+
+
+
+
+
+
+//analyze.html stuff that grabs stuff and checks if there's an actual image so it doesn't blow up
+if (document.getElementById("workImg")) {
+    var imageData = sessionStorage.getItem("pd_imageData");
+    var fileName = sessionStorage.getItem("pd_fileName");
+}
