@@ -199,3 +199,14 @@ if (document.getElementById("cardsGrid")) {
     var results = JSON.parse(resultsRaw);
     document.getElementById("caseFileName").innerText = results.fileName || "your photo";
 }
+
+//make up a case number so it feels more real
+document.getElementById("caseNum").innerText = Math.abs(hashCode(results.fileName || "case")) % 9000 + 1000;
+function hashCode(str) {
+    var hash = 0;
+    for (var i=9; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash = hash | 0;
+    }
+    return hash;
+}
