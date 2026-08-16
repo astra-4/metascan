@@ -474,3 +474,54 @@ html[data-theme="dark"] {
  color: #b23b3b;
  font-weight: bold;
 }
+
+
+/* evidence cards */
+.cards-grid {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 16px;
+}
+.evidence-card {
+ border: 1px solid var(--border);
+ padding: 18px;
+}
+.evidence-card-title {
+ font-weight: bold;
+ font-size: 16px;
+ margin-bottom: 4px;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+}
+
+.severity {
+ font-size: 11px;
+ text-transform: uppercase;
+ padding: 2px 8px;
+ border: 1px solid currentColor;
+ margin-left: auto;
+}
+.severity.high { color: #b23b3b; }
+.severity.medium { color: #b8860b; }
+.severity.low { color: #3f8a4c; }
+
+
+.evidence-body {
+ font-size: 14px;
+ color: var(--muted);
+ margin-top: 6px;
+ line-height: 1.5;
+}
+
+.evidence-body ul {
+ margin: 6px 0 0 0;
+ padding-left: 18px;
+}
+
+.map-frame {
+ width: 100%;
+ height: 180px;
+ border: 1px solid var(--border);
+ margin-top: 10px;
+} 
