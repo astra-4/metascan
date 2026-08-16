@@ -188,3 +188,14 @@ async function runAnalysis() {
     results.breakdown = breakdown;
     return score;
 }
+
+// only run on report.html
+if (document.getElementById("cardsGrid")) {
+    var resultsRaw = sessionStorage.getItem("pd_results");
+    var imageData = sessionStorage.getItem("pd_imageData");
+    if (!resultsRaw || !imageData) {
+        window.location.href = "index.html";
+    }
+    var results = JSON.parse(resultsRaw);
+    document.getElementById("caseFileName").innerText = results.fileName || "your photo";
+}
