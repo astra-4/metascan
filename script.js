@@ -76,3 +76,89 @@ height: 0
 
 
 //actual analysis
+img.onload = function () {
+    results.width = img.naturalWidth;
+    results.height = img.naturalHeight;
+    runAnalysis();
+};
+
+img.src = imageData;
+
+async function runAnalysis() {
+    // metadata
+    markActive("stepMeta");
+    await wait(500);
+
+    if (sampleData) {
+        results.exif = sampleData.exif;
+
+        if (sampleData.exif.latitude && sampleData.exif.longitude) {
+            results.gps = {
+                lat: sampleData.exif.latitude,
+                lon: sampleData.exif.longitude
+            };
+        }
+    } else {
+        try {
+            var blob = await (await fetch(imageData)).blob();
+
+            var exifData = await exifr.parse(blob, {
+                gps: true,
+                tiff: true,
+                exif: true,
+                ifd0: true
+            });
+
+            if (exifData) {
+                results.exif = exifData;
+
+                if (exifData.latitude && exifData.longitude) {
+                    results.gps = {
+                        lat: exifData.latitude,
+                        lon: exifData.longitude
+                    };
+                }
+            }
+        } catch (e) {
+            console.log("exif read failed", e);
+        }
+    }
+
+    markDone("stepMeta");
+
+    // the hidden info
+    markActive("stepHidden");
+    await wait(500);
+    markDone("stepHidden");
+
+    // visuals
+    markActive("stepVisual");
+
+    document.getElementById("analyzeSub").innerText =
+        "scanning image content, this part is slower";
+
+    //pixel
+    var maxSize = 1600;
+
+    var scale = Math.min(
+        1,
+        maxSize / Math.max(img.naturalWidth, img.naturalHeight)
+    );
+
+    canvas.width = img.naturalWidth * scale;
+    canvas.height = img.naturalHeight * scale;
+
+    var ctx = canvas.getContext("2d");
+
+    ctx.drawImage(
+        img,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    if (sampleData) {
+        // i'll add later
+    }
+}
