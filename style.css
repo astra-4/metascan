@@ -351,3 +351,126 @@ html[data-theme="dark"] {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+
+
+/* report page styles, headers, and score gauge */
+.report-wrap {
+ flex: 1;
+ max-width: 900px;
+ width: 100%;
+ margin: 0 auto;
+ padding: 40px 24px 80px 24px;
+ display: flex;
+ flex-direction: column;
+ gap: 32px;
+}
+
+
+.case-header {
+ text-align: center;
+}
+
+
+.case-title {
+ font-size: 28px;
+ font-weight: bold;
+}
+
+
+.case-sub {
+ color: var(--muted);
+ font-size: 14px;
+ margin-top: 4px;
+}
+
+
+.score-card {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ border: 1px solid var(--border);
+ padding: 24px;
+ position: relative;
+}
+
+
+.gauge {
+ width: 220px;
+}
+
+
+.gauge-track {
+ fill: none;
+ stroke: var(--border);
+ stroke-width: 14;
+}
+
+
+.gauge-fill {
+ fill: none;
+ stroke: var(--accent);
+ stroke-width: 14;
+ stroke-dasharray: 283;
+ stroke-dashoffset: 283;
+ transition: stroke-dashoffset 1s ease, stroke 0.3s ease;
+}
+
+
+.gauge-number {
+ font-size: 40px;
+ font-weight: bold;
+ margin-top: -60px;
+}
+
+
+.gauge-label {
+ color: var(--muted);
+ font-size: 14px;
+}
+
+
+.risk-badge {
+ margin-top: 10px;
+ padding: 6px 14px;
+ border: 1px solid var(--border);
+ font-size: 13px;
+ text-transform: uppercase;
+ font-weight: bold;
+}
+
+
+.risk-badge.green {
+    border-color: #3f8a4c;
+    color: #3f8a4c;
+}
+.risk-badge.yellow {
+    border-color: #b8860b;
+    color: #b8860b;
+}
+.risk-badge.red {
+    border-color: #b23b3b;
+    color: #b23b3b;
+}
+
+
+.breakdown {
+ margin-top: 16px;
+ width: 100%;
+ max-width: 320px;
+ display: flex;
+ flex-direction: column;
+ gap: 6px;
+}
+
+
+.breakdown-row {
+ display: flex;
+ justify-content: space-between;
+ font-size: 14px;
+}
+
+
+.breakdown-row .pts {
+ color: #b23b3b;
+ font-weight: bold;
+}
