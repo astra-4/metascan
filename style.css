@@ -216,3 +216,57 @@ html[data-theme="dark"] {
 .corner::after {
     width: 2px;
 }
+
+.corner::before {
+    width: 10px;
+    height: 2px;
+    top: 6px;
+    left: 2px;
+}
+.corner::after {
+    width: 2px;
+    height: 10px;
+    left: 6px;
+    top: 2px;
+}
+
+
+.dropzone-title {
+ font-size: 20px;
+ font-weight: bold;
+ text-transform: uppercase;
+}
+
+
+.filetypes-label {
+ color: var(--muted);
+ font-size: 14px;
+}
+
+
+.filetypes {
+ display: flex;
+ gap: 8px;
+ flex-wrap: wrap;
+ justify-content: center;
+}
+
+
+.tag {
+ border: 1px solid var(--border);
+ border-radius: 4px;
+ padding: 4px 10px;
+ font-size: 12px;
+ color: var(--muted);
+}
+
+
+.footer-note {
+ font-size: 13px;
+ color: var(--muted);
+}
+
+
+#fileInput {
+ display: none;
+}
