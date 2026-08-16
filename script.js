@@ -46,3 +46,33 @@ if (document.getElementById("workImg")) {
     var imageData = sessionStorage.getItem("pd_imageData");
     var fileName = sessionStorage.getItem("pd_fileName");
 }
+
+
+
+// step by step confirmation stpes are done for people's goldfish attention spans
+function markActive(id) {
+    document.getElementById(id).classList.add("active");
+}
+function markDone(id) {
+    var el = document.getElementById(id);
+    el.classList.remove("active");
+    el.classList.add("done");
+}
+//then waits a tiny bit
+function wait(ms) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, ms);
+    });
+}
+var results = {
+    fileName: fileName,
+    exif: null,
+    gps: null,
+    qr: null,
+    faces: [],
+    width: 0,
+height: 0
+};
+
+
+//actual analysis
