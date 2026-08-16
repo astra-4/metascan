@@ -162,3 +162,29 @@ async function runAnalysis() {
         // i'll add later
     }
 }
+
+
+//actual score math and deduction stuff
+ function calcScore(r) {
+    var score = 100;
+    var breakdown = [];
+        if (r.gps) {
+        score -= 25;
+        breakdown.push({ label: "GPS location found", points: -25 });
+    }
+    if (r.faces && r.faces.length > 0) {
+        score -= 10;
+        breakdown.push({ label: r.faces.length + " face(s) detected", points: -10 });
+    }
+    if (r.qr) {
+        score -= 15;
+        breakdown.push({ label: "QR code found", points: -15 });
+    }
+    if (r.exif && (r.exif.Make || r.exif.Model)) {
+        score -= 5;
+        breakdown.push({ label: "Device info in metadata", points: -5 });
+    }
+        if (score < 0) score = 0;
+    results.breakdown = breakdown;
+    return score;
+}
