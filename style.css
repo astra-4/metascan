@@ -559,3 +559,48 @@ html[data-theme="dark"] {
  color: var(--accent);
  font-weight: bold;
 }
+
+
+/* metadata explorer */
+.explorer-group {
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+}
+.explorer-group-head {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+.explorer-group-body {
+    display: none;
+    padding: 0 14px 10px 14px;
+}
+.explorer-group.open .explorer-group-body {
+    display: block;
+}
+.explorer-field {
+    padding: 6px 0;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+    cursor:pointer;
+}
+.explorer-field:first-child {
+    border-top: none;
+}
+.explorer-field-name {
+    font-weight: bold;
+}
+.explorer-field-value {
+    color: var(--muted);
+}
+.explorer-field-explain {
+    display: none;
+    color: var(--muted);
+    margin-top: 4px;
+    font-style: italic;
+}
+.explorer-field.open .explorer-field-explain {
+    display: block;
+}
