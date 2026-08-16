@@ -43,6 +43,36 @@
                 <div class="section-title">Metadata Explorer</div>
                 <div class="explorer" id="explorer"></div>
             </div>
+
+
+            <!--sanitizing stuff-->
+                <div class="section-block">
+                    <div class="section-title">Sanitize Image</div>
+                    <p class="section-note">Makes a cleaned up copy: blurs faces, blurs the QR code, and strips out the metadata.</p>
+                    <button class="btn btn-primary" id="sanitizeBtn" onclick="sanitizeImage()">Sanitize Image</button>
+
+                    <div class="before-after" id="beforeAfter" style="display:none;">
+                    <div class="ba-col">
+                        <div class="ba-label">Original</div>
+                        <img id="originalImg" class="ba-img">
+                    </div>
+                    <div class="ba-col">
+                        <div class="ba-label">Sanitized</div>
+                        <canvas id="sanitizedCanvas" class="ba-img"></canvas>
+                        <a class="btn btn-primary" id="downloadLink" download="sanitized.png">Download</a>
+                    </div>
+                    </div>
+                </div>
+            <a href="index.html" class="back-link">← scan another photo</a>
         </div>
     </div>
+
+    <div class="map-modal-backdrop" id="mapModalBackdrop" onclick="if(event.target===this) closeMapModal()">
+        <div class="map-modal">
+            <button type="button" class="btn btn-ghost map-modal-close" onclick="closeMapModal()">✕ Close</button>
+            <div id="gpsMapModal" class="map-modal-frame"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
