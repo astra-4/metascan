@@ -246,3 +246,129 @@ if (results.breakdown && results.breakdown.length > 0) {
 } else {
     breakdownList.innerHTML = "<div class='breakdown-row'><span>No major risks found</span></div>";
 }
+
+
+//evidence cards
+var cardsGrid = document.getElementById('cardsGrid');
+var cardsHtml = "";
+
+//locatio ncard
+if (results.gps) {
+    var lat = results.gps.lat;
+    var lon = results.gps.lon;
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+        "<div class='evidence-card-title'>📍 Location Evidence <span class='severity high'>High</span></div>" +
+        "<div class='evidence-body'>" +
+            "This image contains GPS coordinates (" + lat.toFixed(5) + ", " + lon.toFixed(5) + "). Someone who has this photo could figure out:" +
+            "<ul><li>where this was taken, down to a few meters</li><li>possibly your home or workplace</li><li>where you were at this exact moment</li></ul>" +
+            "<div class='map-wrap'>" +
+            "<div id='gpsMap' class='map-frame'></div>" +
+            "<div class='map-actions'>" +
+                "<button type='button' class='btn btn-ghost map-enlarge-btn' onclick='openMapModal()'>⤢ Enlarge map</button>" +
+                "<a class='btn btn-ghost map-enlarge-btn' target='_blank' rel='noopener' href='https://www.osmap.uk/#15/" + lat + "/" + lon + "'>View in English (osMap) ↗</a>" +
+            "</div>" +
+            "</div>" +
+        "</div>" +
+        "</div>";
+} else {
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+    "<div class='evidence-card-title'>📍 Location Evidence <span class='severity low'>Low</span></div>" +
+    "<div class='evidence-body'>No GPS location data was found in this image.</div>" +
+    "</div>";
+}
+
+//device card
+var exif = results.exif || {};
+if (exif.Make || exif.Model) {
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+        "<div class='evidence-card-title'>📷 Device Evidence <span class='severity medium'>Medium</span></div>" +
+        "<div class='evidence-body'>" +
+            "Taken with: " + (exif.Make || "") + " " + (exif.Model || "") + "<br>" +
+            (exif.LensModel ? "Lens: " + exif.LensModel + "<br>" : "") +
+            (exif.FNumber ? "Aperture: f/" + exif.FNumber + "<br>" : "") +
+            (exif.FocalLength ? "Focal length: " + exif.FocalLength + "mm<br>" : "") +
+            "This tells anyone what phone or camera you own, which can help identify you." +
+        "</div>" +
+        "</div>";
+} else {
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+    "<div class='evidence-card-title'>📷 Device Evidence <span class='severity low'>Low</span></div>" +
+    "<div class='evidence-body'>No device or camera info was found.</div>" +
+    "</div>";
+}
+
+//time cards
+if (exif.DateTimeOriginal || exif.CreateDate) {
+    var d = new Date(exif.DateTimeOriginal || exif.CreateDate);
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+    "<div class='evidence-card-title'>🕒 Time Evidence <span class='severity medium'>Medium</span></div>" +
+    "<div class='evidence-body'>" +
+        "Taken: " + d.toLocaleString() + "<br>" +
+        "This can reveal your daily routine, or when your home was empty." +
+    "</div>" +
+    "</div>";
+} else {
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+    "<div class='evidence-card-title'>🕒 Time Evidence <span class='severity low'>Low</span></div>" +
+    "<div class='evidence-body'>No timestamp was found in the metadata.</div>" +
+    "</div>";
+}
+
+//qr code card
+if (results.qr) {
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+    "<div class='evidence-card-title'>🔳 QR Code Found <span class='severity high'>High</span></div>" +
+    "<div class='evidence-body'>" +
+        "A QR code was found in this image. It decodes to:<br>" +
+        "<code>" + escapeHtml(results.qr.data) + "</code><br>" +
+        "This could reveal a wifi password, a payment link, or a website you did not mean to share." +
+    "</div>" +
+    "</div>";
+} else {
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+    "<div class='evidence-card-title'>🔳 QR Code <span class='severity low'>Low</span></div>" +
+    "<div class='evidence-body'>No QR code was detected in this image.</div>" +
+    "</div>";
+}
+
+//faces card
+if (results.faces && results.faces.length > 0) {
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+    "<div class='evidence-card-title'>🙂 Face Evidence <span class='severity medium'>Medium</span></div>" +
+    "<div class='evidence-body'>" +
+        "Faces found: " + results.faces.length + "<br>" +
+        "This does not identify anyone, just counts faces. More faces means more people could recognize themselves or others in this photo." +
+    "</div>" +
+    "</div>";
+} else {
+    cardsHtml += "" +
+    "<div class='evidence-card'>" +
+    "<div class='evidence-card-title'>🙂 Face Evidence <span class='severity low'>Low</span></div>" +
+    "<div class='evidence-body'>No faces were detected.</div>" +
+    "</div>";
+}
+
+//set all card HTML so initiated map don't get deleted
+cardsGrid.innerHtml = cardsHtml;
+if(results.gps) {
+    initGpsMap(results.gps.lat, results.gps.lon);
+}
+function escapeHtml(str) {{
+    var div = docuent.createElement("div");
+    div.innerText = str;
+    return div.innerHTML;
+}
+
+//recommendations
+var recoList = document.getElementById("recoList");
+
+}
