@@ -604,3 +604,43 @@ html[data-theme="dark"] {
 .explorer-field.open .explorer-field-explain {
     display: block;
 }
+
+/* before/after */
+.before-after {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.ba-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+.ba-label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+.ba-img {
+    width: 100%;
+    border: 1px solid var(--border);
+}
+
+.back-link {
+    text-align: center;
+    color: var(--accent);
+    font-size: 14px;
+    text-decoration: none;
+}
+.back-link:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .cards-grid, .before-after {
+        grid-template-columns: 1fr;
+    }
+}

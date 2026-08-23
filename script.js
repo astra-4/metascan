@@ -210,3 +210,39 @@ function hashCode(str) {
     }
     return hash;
 }
+
+//file in score gauge
+var score = results.score;
+document.getElementById("scoreNum").innerText = score;
+var riskBadge = document.getElementById("riskBadge");
+var riskLevel, riskColor;
+if (score>=80) {
+    riskLevel = "Low Risk";
+    riskColor = "green";
+} else if (score >=50) {
+    riskLevel = "Medium Risk";
+    riskColor = "yellow";
+} else {
+    riskLevel = "High Risk";
+    riskColor = "red";
+}
+riskBadge.innerText = riskLevel;
+riskBadge.classList.add(riskColor);
+var circumference = 283;
+var offset = cicumference - (score/100) * circumference;
+var gaugeFill = document.getElementById("gaugeFill");
+setTimeout(function() {
+    gaugeFill.style.strokeDashoffset = offset;
+    gaugeFill.style.stroke = riskColor = "green" ? "#3f8a4c" : (riskColor == "yellow" ? "#b8860b" : "b23b3b");
+}, 100);
+var breakdownList = document.getElementById("breakdownList");
+if (results.breakdown && results.breakdown.length > 0) {
+    results.breakdown.forEach(function(b) {
+        var row = document.createElement("div");
+        row.className = "breakdown-row";
+        row.innerHTML = "<span>" + b.label + "</span><span class='pts'>" + b.points + "</span>";
+        breakdownList.appendChild(row);
+    });
+} else {
+    breakdownList.innerHTML = "<div class='breakdown-row'><span>No major risks found</span></div>";
+}
