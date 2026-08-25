@@ -75,7 +75,8 @@ function closeMapModalOnEsc(e) {
 var savedTheme = localStorage.getItem("theme");
 if (savedTheme == "dark") {
     document.documentElement.setAttribute("data-theme", "dark");
-    document.getElementById("themeBtn").innerHTML = "☼";
+    var initBtn = document.getElementById("themeBtn");
+    if (initBtn) initBtn.innerHTML = "☼";
 }
 
 function toggleTheme() {
@@ -403,7 +404,7 @@ var dotIndex = 2;
 setInterval(function() {
     dotIndex = (dotIndex + 1) % dotStates.length;
     dotsEl.innerText = dotStates[dotIndex];
-}
+}, 450);
 
 //trying to fix bug of dropzone being obliterateed on all the pages for some reason
 if (document.getElementById("dropzone")) {

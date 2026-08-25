@@ -5,14 +5,18 @@
         <title>Analyzing... - MetaScan</title>
         <link rel="stylesheet" href="style.css">
         <script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
         <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     </head>
 
     <body>
         <div class="page">
-            <div class="nav">
+              <div class="nav">
                 <a class="brand" href="index.html">MetaScan</a>
+                <div class="nav-right">
+                    <a class="btn btn-ghost" href="how-it-works.html">How It Works</a>
+                    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">☾</button>
+                </div>
             </div>
 
             <div class="analyze-wrap">
