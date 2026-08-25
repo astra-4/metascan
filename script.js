@@ -320,6 +320,66 @@ if (results.breakdown && results.breakdown.length > 0) {
     breakdownList.innerHTML = "<div class='breakdown-row'><span>No major risks found</span></div>";
 }
 
+//sample cases onthe ome page with fake metadat baked in
+var sampleCases = {
+    beach: {
+        file: "https://images.unsplash.com/photo-1667416476011-eba2d0f854c8?fm=jpg&q=80&w=1400&fit=crop",
+        name: "vacation-photo.jpg",
+        exif: {
+            Make: "Apple", Model: "iPhone 13 Pro",
+            LensModel: "iPhone 13 Pro back triple camera 5.7mm f/1.5",
+            FNumber: 1.5, FocalLength: 5.7, ISO: 32, ExposureTime: 0.0005,
+            latitude: 36.4618, longitude: 25.3753, GPSAltitude: 62,
+            DateTimeOriginal: "2024-07-14T18:32:10", Software: "15.5"
+        },
+        qr: null,
+        faces: []
+    },
+    selfie: {
+        file: "https://images.unsplash.com/photo-1664634178711-79e1c44c36c7?fm=jpg&q=80&w=1400&h=1400&fit=crop&crop=faces",
+        name: "friend-selfie.jpg",
+        exif: {
+            Make: "Samsung", Model: "Galaxy S23",
+            DateTimeOriginal: "2024-11-02T20:15:44", Software: "Samsung Gallery"
+        },
+        qr: null,
+        faces: [{ x: 470, y: 190, width: 460, height: 520 }]
+    },
+    wifinote: {
+        file: "https://images.unsplash.com/photo-1676224182976-59d5d17d6143?fm=jpg&q=80&w=1400&h=1400&fit=crop",
+        name: "poster-photo.jpg",
+        exif: {
+            Make: "Google", Model: "Pixel 8",
+            DateTimeOriginal: "2024-09-20T09:05:00", Software: "Google Camera"
+        },
+        qr: {
+            data: "https://example-cafe.com/menu?table=12",
+            location: {
+            topLeftCorner: { x: 480, y: 420 }, topRightCorner: { x: 900, y: 420 },
+            bottomLeftCorner: { x: 480, y: 840 }, bottomRightCorner: { x: 900, y: 840 }
+            }
+        },
+        faces: []
+    }
+};
+
+
+function loadSample(id) {
+    var sample = sampleCases[id];
+    fetch(sample.file).then(function(res) {
+        return res.blob();
+    }).then(function(blob) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            sessionStorage.setItem("pd_imageData", reader.result);
+            sessionStorage.setItem("pd_fileName", sample.name);
+            sessionStorage.setItem("pd_sampleData", JSON.stringify({ exif: sample.exif, qr: sample.qr, faces: sample.faces }));
+            window.location.href = "analyze.html";
+        };
+        reader.readAsDataURL(blob);
+    });
+}
+
 
 //evidence cards
 var cardsGrid = document.getElementById('cardsGrid');
@@ -576,4 +636,3 @@ function blurRegion(ctx, canvas, x, y, w, h) {
     ctx.imageSmoothingEnabled = true;
     ctx.drawImage(small, 0, 0, smallSize, smallSize, x, y, w, h);
 }
-
