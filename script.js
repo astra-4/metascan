@@ -380,6 +380,67 @@ function loadSample(id) {
     });
 }
 
+//grab the image user uploaded
+var fileName = sessionStorage.getItem("pd_fileName");
+
+
+//skip sample
+var sampleDataRaw = sessionStorage.getItem("pd_sampleData");
+var sampleData = sampleDataRaw ? JSON.parse(sampleDataRaw) : null;
+if (!imageData) {
+    window.location.href = "index.html";
+}
+var img = document.getElementById("workImg");
+var canvas = document.getElementById("workCanvas");
+
+// animate ... and skipping for samples
+var dotsEl = document.getElementById("analyzeDots");
+var dotStates = [".", "..", "..."];
+var dotIndex = 2;
+setInterval(function() {
+    dotIndex = (dotIndex + 1) % dotStates.length;
+    dotsEl.innerText = dotStates[dotIndex];
+}, 450);
+    results.qr = sampleData.qr;
+    results.faces = sampleData.faces;
+} else {
+    try {
+        var imageData2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var qrResult = jsQR(imageData2.data, imageData2.width, imageData2.height);
+        if (qrResult) {
+            results.qr = {
+            data: qrResult.data,
+            location: qrResult.location
+            };
+        }
+    } catch (e) {
+        console.log("qr scan failed", e);
+    }
+ try {
+       var MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
+       await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+       var detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions());
+       results.faces = detections.map(function(d) {
+         return { x: d.box.x, y: d.box.y, width: d.box.width, height: d.box.height };
+       });
+     } catch (e) {
+       console.log("face detection not available", e);
+     }
+   }
+    results.canvasWidth = canvas.width;
+    results.canvasHeight = canvas.height;
+    await wait(300);
+    markDone("stepVisual");
+
+    // riks score
+    markActive("stepRisk");
+    await wait(500);
+    results.score = calcScore(results);
+    markDone("stepRisk");
+    await wait(400);
+    sessionStorage.setItem("pd_results", JSON.stringify(results));
+    window.location.href = "report.html";
+}
 
 //evidence cards
 var cardsGrid = document.getElementById('cardsGrid');
