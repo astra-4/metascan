@@ -84,7 +84,7 @@ function toggleTheme() {
     if (html.getAttribute("data-theme") == "dark") {
         html.removeAttribute("data-theme");
         btn.innerHTML = "☾";
-        localStorage.getItem("theme", "light");
+        localStorage.setItem("theme", "light");
     } else {
         html.setAttribute("data-theme", "dark");
         btn.innerHTML = "☼";
@@ -137,6 +137,7 @@ function wait(ms) {
         setTimeout(resolve, ms);
     });
 }
+var fileName = sessionStorage.getItem("pd_fileName");
 var results = {
     fileName: fileName,
     exif: null,
@@ -144,96 +145,98 @@ var results = {
     qr: null,
     faces: [],
     width: 0,
-height: 0
+    height: 0
 };
 
 
 //actual analysis
-img.onload = function () {
-    results.width = img.naturalWidth;
-    results.height = img.naturalHeight;
-    runAnalysis();
-};
+var fileName = sessionStorage.getItem("pd_fileName");
+var imageData = sessionStorage.getItem("pd_imageData");
+var img = document.getElementById("workImg");
+var canvas = document.getElementById("workCanvas");
 
-img.src = imageData;
+if (img && canvas && imageData) {
+    img.onload = function () {
+        results.width = img.naturalWidth;
+        results.height = img.naturalHeight;
+        runAnalysis();
+    };
+    img.src = imageData;
+}
 
 async function runAnalysis() {
     // metadata
     markActive("stepMeta");
     await wait(500);
-
     if (sampleData) {
-        results.exif = sampleData.exif;
-
-        if (sampleData.exif.latitude && sampleData.exif.longitude) {
-            results.gps = {
-                lat: sampleData.exif.latitude,
-                lon: sampleData.exif.longitude
-            };
-        }
+        results.exif = sampleData.exif || null;
     } else {
         try {
-            var blob = await (await fetch(imageData)).blob();
-
-            var exifData = await exifr.parse(blob, {
-                gps: true,
-                tiff: true,
-                exif: true,
-                ifd0: true
-            });
-
-            if (exifData) {
-                results.exif = exifData;
-
-                if (exifData.latitude && exifData.longitude) {
-                    results.gps = {
-                        lat: exifData.latitude,
-                        lon: exifData.longitude
-                    };
-                }
-            }
+            results.exif = await exifr.parse(imageData, { gps: true, translateValues: true }) || null;
         } catch (e) {
-            console.log("exif read failed", e);
+            console.log("exif parse failed", e);
         }
     }
-
     markDone("stepMeta");
 
-    // the hidden info
+    //pull gps
     markActive("stepHidden");
     await wait(500);
+    if (results.exif && results.exif.latitude != null && results.exif.longitude != null) {
+        results.gps = { lat: results.exif.latitude, lon: results.exif.longitude };
+    }
     markDone("stepHidden");
 
     // visuals
     markActive("stepVisual");
+    document.getElementById("analyzeSub").innerText = "scanning image content, this part is slower";
 
-    document.getElementById("analyzeSub").innerText =
-        "scanning image content, this part is slower";
-
-    //pixel
     var maxSize = 1600;
-
-    var scale = Math.min(
-        1,
-        maxSize / Math.max(img.naturalWidth, img.naturalHeight)
-    );
-
+    var scale = Math.min(1, maxSize / Math.max(img.naturalWidth, img.naturalHeight));
     canvas.width = img.naturalWidth * scale;
     canvas.height = img.naturalHeight * scale;
-
     var ctx = canvas.getContext("2d");
-
-    ctx.drawImage(
-        img,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     if (sampleData) {
-        // i'll add later
+        results.qr = sampleData.qr || null;
+        results.faces = sampleData.faces || [];
+    } else {
+        try {
+            var px = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            var qrResult = jsQR(px.data, px.width, px.height);
+            if (qrResult) {
+                results.qr = { data: qrResult.data, location: qrResult.location };
+            }
+        } catch (e) {
+            console.log("qr scan failed", e);
+        }
+        try {
+            var MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
+            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+            var detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions());
+            results.faces = detections.map(function (d) {
+                return { x: d.box.x, y: d.box.y, width: d.box.width, height: d.box.height };
+            });
+        } catch (e) {
+            console.log("face detection not available", e);
+        }
     }
+
+    results.canvasWidth = canvas.width;
+    results.canvasHeight = canvas.height;
+    await wait(300);
+    markDone("stepVisual");
+
+    // risk score
+    markActive("stepRisk");
+    await wait(500);
+    results.score = calcScore(results);
+    markDone("stepRisk");
+    await wait(400);
+    sessionStorage.removeItem("pd_sampleData");
+    sessionStorage.setItem("pd_results", JSON.stringify(results));
+    window.location.href = "report.html";
 }
 
 
@@ -277,7 +280,7 @@ if (document.getElementById("cardsGrid")) {
 document.getElementById("caseNum").innerText = Math.abs(hashCode(results.fileName || "case")) % 9000 + 1000;
 function hashCode(str) {
     var hash = 0;
-    for (var i=9; i < str.length; i++) {
+    for (var i = 0; i < str.length; i++) {
         hash = (hash << 5) - hash + str.charCodeAt(i);
         hash = hash | 0;
     }
@@ -302,11 +305,11 @@ if (score>=80) {
 riskBadge.innerText = riskLevel;
 riskBadge.classList.add(riskColor);
 var circumference = 283;
-var offset = cicumference - (score/100) * circumference;
+var offset = circumference - (score / 100) * circumference;
 var gaugeFill = document.getElementById("gaugeFill");
 setTimeout(function() {
     gaugeFill.style.strokeDashoffset = offset;
-    gaugeFill.style.stroke = riskColor = "green" ? "#3f8a4c" : (riskColor == "yellow" ? "#b8860b" : "b23b3b");
+    gaugeFill.style.stroke = riskColor == "green" ? "#3f8a4c" : (riskColor == "yellow" ? "#b8860b" : "#b23b3b");
 }, 100);
 var breakdownList = document.getElementById("breakdownList");
 if (results.breakdown && results.breakdown.length > 0) {
@@ -400,46 +403,6 @@ var dotIndex = 2;
 setInterval(function() {
     dotIndex = (dotIndex + 1) % dotStates.length;
     dotsEl.innerText = dotStates[dotIndex];
-}, 450);
-    results.qr = sampleData.qr;
-    results.faces = sampleData.faces;
-} else {
-    try {
-        var imageData2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        var qrResult = jsQR(imageData2.data, imageData2.width, imageData2.height);
-        if (qrResult) {
-            results.qr = {
-            data: qrResult.data,
-            location: qrResult.location
-            };
-        }
-    } catch (e) {
-        console.log("qr scan failed", e);
-    }
- try {
-       var MODEL_URL = "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights";
-       await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-       var detections = await faceapi.detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions());
-       results.faces = detections.map(function(d) {
-         return { x: d.box.x, y: d.box.y, width: d.box.width, height: d.box.height };
-       });
-     } catch (e) {
-       console.log("face detection not available", e);
-     }
-   }
-    results.canvasWidth = canvas.width;
-    results.canvasHeight = canvas.height;
-    await wait(300);
-    markDone("stepVisual");
-
-    // riks score
-    markActive("stepRisk");
-    await wait(500);
-    results.score = calcScore(results);
-    markDone("stepRisk");
-    await wait(400);
-    sessionStorage.setItem("pd_results", JSON.stringify(results));
-    window.location.href = "report.html";
 }
 
 //trying to fix bug of dropzone being obliterateed on all the pages for some reason
@@ -584,12 +547,12 @@ if (results.faces && results.faces.length > 0) {
 }
 
 //set all card HTML so initiated map don't get deleted
-cardsGrid.innerHtml = cardsHtml;
+cardsGrid.innerHTML = cardsHtml;
 if(results.gps) {
     initGpsMap(results.gps.lat, results.gps.lon);
 }
-function escapeHtml(str) {{
-    var div = docuent.createElement("div");
+function escapeHtml(str) {
+    var div = document.createElement("div");
     div.innerText = str;
     return div.innerHTML;
 }
@@ -605,11 +568,8 @@ if (results.gps) recos.push("Remove GPS location data");
     recos.forEach(function(r) {
     var li = document.createElement("li");
     li.innerText = r;
-    recoList.appendChild(li);
+        recoList.appendChild(li);
 });
-
-}
-
 
 //metadata explorer
 var fieldInfo = {
