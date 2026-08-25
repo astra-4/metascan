@@ -558,3 +558,22 @@ function sanitizeImage() {
     };
     img.src = imageData;
 }
+
+//i'm stupid i forgot the blurring thing
+function blurRegion(ctx, canvas, x, y, w, h) {
+    var pad = 6;
+    x = Math.max(0, x - pad);
+    y = Math.max(0, y - pad);
+    w = Math.min(canvas.width - x, w + pad * 2);
+    h = Math.min(canvas.height - y, h + pad * 2);
+    if (w <= 0 || h <= 0) return;
+    var small = document.createElement("canvas");
+    var smallSize = 12;
+    small.width = smallSize;
+    small.height = smallSize;
+    var sctx = small.getContext("2d");
+    sctx.drawImage(canvas, x, y, w, h, 0, 0, smallSize, smallSize);
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(small, 0, 0, smallSize, smallSize, x, y, w, h);
+}
+
