@@ -36,7 +36,31 @@
                     </div>
                  </div>
                  <div class="footer-note">Analysis runs in yoru browser. Nothing is uploaded to a server.</div>
+
+                 <!--sample iamges so people don't have to upload their own-->
+                <div class="samples-section">
+                    <div class="samples-label">Don't have a photo handy? Try a sample case:</div>
+                    <div class="samples-grid">
+                    <div class="sample-card" onclick="loadSample('beach')">
+                        <img src="https://images.unsplash.com/photo-1667416476011-eba2d0f854c8?fm=jpg&amp;q=70&amp;w=500&amp;h=380&amp;fit=crop" alt="Sample vacation photo">
+                        <div class="sample-card-name">Vacation photo</div>
+                        <div class="sample-card-hint">GPS location + device info</div>
+                    </div>
+                    <div class="sample-card" onclick="loadSample('selfie')">
+                        <img src="https://images.unsplash.com/photo-1664634178711-79e1c44c36c7?fm=jpg&amp;q=70&amp;w=500&amp;h=380&amp;fit=crop&amp;crop=faces" alt="Sample selfie photo">
+                        <div class="sample-card-name">Friend's selfie</div>
+                        <div class="sample-card-hint">Face detected + device info</div>
+                    </div>
+                    <div class="sample-card" onclick="loadSample('wifinote')">
+                        <img src="https://images.unsplash.com/photo-1676224182976-59d5d17d6143?fm=jpg&amp;q=70&amp;w=500&amp;h=380&amp;fit=crop" alt="Sample photo of a poster with a QR code">
+                        <div class="sample-card-name">Photo of a poster</div>
+                        <div class="sample-card-hint">QR code + device info</div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+
+    <script src="script.js"></script>
     </body>
 </html>
