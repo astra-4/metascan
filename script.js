@@ -456,3 +456,105 @@ if (results.gps) recos.push("Remove GPS location data");
 });
 
 }
+
+
+//metadata explorer
+var fieldInfo = {
+    Make: "This reveals the brand of camera or phone that took this photo.",
+    Model: "This reveals the exact phone or camera model used.",
+    LensModel: "This reveals what camera lens was used.",
+    FocalLength: "This reveals the zoom level of the lens used.",
+    FNumber: "This reveals the aperture setting, part of the camera settings used.",
+    ISO: "This reveals the light sensitivity setting, hinting at the lighting conditions.",
+    ExposureTime: "This reveals the shutter speed used for this photo.",
+    latitude: "This reveals the exact latitude where this photo was taken.",
+    longitude: "This reveals the exact longitude where this photo was taken.",
+    GPSAltitude: "This reveals the altitude where the photo was taken.",
+    DateTimeOriginal: "This reveals the exact date and time this photo was taken.",
+    CreateDate: "This reveals when the image file was created.",
+    ModifyDate: "This reveals when the image file was last modified.",
+    Software: "This reveals what app or program last edited or exported this image."
+};
+
+var groups = {
+    Camera: ["Make", "Model"],
+    Lens: ["LensModel", "FocalLength", "FNumber", "ISO", "ExposureTime"],
+    GPS: ["latitude", "longitude", "GPSAltitude"],
+    Time: ["DateTimeOriginal", "CreateDate", "ModifyDate"],
+    "Editing Software": ["Software"]
+};
+
+var explorer = document.getElementById("explorer");
+if (results.exif) {
+    Object.keys(groups).forEach(function(groupName) {
+        var fieldsInGroup = groups[groupName].filter(function(f) {
+            return results.exif[f] !== undefined && results.exif[f] !== null;
+        });
+        if (fieldsInGroup.length == 0) return;
+        var groupDiv = document.createElement("div");
+        groupDiv.className = "explorer-group";
+        var head = document.createElement("div");
+        head.className = "explorer-group-head";
+        head.innerHTML = "<span>" + groupName + "</span><span>▶</span>";
+        head.onclick = function() {
+            groupDiv.classList.toggle("open");
+        };
+        groupDiv.appendChild(head);
+        var body = document.createElement("div");
+        body.className = "explorer-group-body";
+        fieldsInGroup.forEach(function(f) {
+            var fieldDiv = document.createElement("div");
+            fieldDiv.className = "explorer-field";
+            fieldDiv.innerHTML = "" +
+                "<div class='explorer-field-name'>" + f + "</div>" +
+                "<div class='explorer-field-value'>" + results.exif[f] + "</div>" +
+                "<div class='explorer-field-explain'>" + (fieldInfo[f] || "Part of the photo's technical metadata.") + "</div>";
+            fieldDiv.onclick = function(e) {
+                e.stopPropagation();
+                fieldDiv.classList.toggle("open");
+            };
+            body.appendChild(fieldDiv);
+        });
+        groupDiv.appendChild(body);
+        explorer.appendChild(groupDiv);
+    });
+} else {
+explorer.innerHTML = "No metadata fields were found in this image.";
+}
+
+//sanitize button
+function sanitizeImage() {
+    var img = new Image();
+    img.onload = function() {
+        var canvas = document.getElementById("sanitizedCanvas");
+        canvas.width = results.canvasWidth || img.naturalWidth;
+        canvas.height = results.canvasHeight || img.naturalHeight;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var boxes = [];
+        if (results.faces) {
+            results.faces.forEach(function(f) {
+                boxes.push(f);
+            });
+        }
+        if (results.qr && results.qr.location) {
+            var loc = results.qr.location;
+            var xs = [loc.topLeftCorner.x, loc.topRightCorner.x, loc.bottomLeftCorner.x, loc.bottomRightCorner.x];
+            var ys = [loc.topLeftCorner.y, loc.topRightCorner.y, loc.bottomLeftCorner.y, loc.bottomRightCorner.y];
+            boxes.push({
+                x: Math.min.apply(null, xs),
+                y: Math.min.apply(null, ys),
+                width: Math.max.apply(null, xs) - Math.min.apply(null, xs),
+                height: Math.max.apply(null, ys) - Math.min.apply(null, ys)
+            });
+        }
+        boxes.forEach(function(b) {
+            blurRegion(ctx, canvas, b.x, b.y, b.width, b.height);
+        });
+        document.getElementById("beforeAfter").style.display = "grid";
+        document.getElementById("originalImg").src = imageData;
+        var link = document.getElementById("downloadLink");
+        link.href = canvas.toDataURL("image/png");
+    };
+    img.src = imageData;
+}
