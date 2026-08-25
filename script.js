@@ -442,6 +442,38 @@ setInterval(function() {
     window.location.href = "report.html";
 }
 
+//trying to fix bug of dropzone being obliterateed on all the pages for some reason
+if (document.getElementById("dropzone")) {
+    var dropzone = document.getElementById("dropzone");
+    var fileInput = document.getElementById("fileInput");
+
+
+    dropzone.addEventListener("dragover", function(e) {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+    });
+
+    dropzone.addEventListener("dragleave", function(e) {
+        dropzone.classList.remove("dragover");
+    });
+
+    dropzone.addEventListener("drop", function(e) {
+        e.preventDefault();
+        dropzone.classList.remove("dragover");
+        var files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFile(files[0]);
+        }
+    });
+
+    fileInput.addEventListener("change", function(e) {
+        if (fileInput.files.length > 0) {
+            handleFile(fileInput.files[0]);
+        }
+    });
+}
+
+
 //evidence cards
 var cardsGrid = document.getElementById('cardsGrid');
 var cardsHtml = "";
