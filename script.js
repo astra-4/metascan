@@ -1,3 +1,76 @@
+//local language
+
+var ZOOM_LABELS = {
+    en: ["Zoom in", "Zoom out"],
+    es: ["Acercar", "Alejar"],
+    fr: ["Zoomer", "Dézoomer"],
+    de: ["Vergrößern", "Verkleinern"],
+    pt: ["Aumentar zoom", "Diminuir zoom"],
+    it: ["Aumenta zoom", "Riduci zoom"],
+    ja: ["拡大", "縮小"],
+    zh: ["放大", "缩小"],
+    ko: ["확대", "축소"],
+    ru: ["Увеличить", "Уменьшить"]
+};
+
+var gpsMapCoords = null;
+
+function zoomLabelsForDevice() {
+    var deviceLang = ((navigator.language || navigator.userLanguage || "en").split("-")[0]).toLowerCase();
+    return ZOOM_LABELS[deviceLang] || ZOOM_LABELS.en;
+}
+
+function initGpsMap(lat, lon) {
+    gpsMapCoords = [lat, lon];
+    if (typeof L===  "undefined") return;
+    var labels = zoomLabelsForDevice();
+
+    var map = L.map("gpsMap", { zoomControl: false }).setView([lat, lon], 14);
+    L.control.zoom({ zoomInTitle: labels[0], zoomOutTitle: labels[1] }).addTo(map);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors",
+    maxZoom: 19
+    }).addTo(map);
+    L.marker([lat, lon]).addTo(map);
+}
+
+var gpsMapModalInstance = null;
+
+function openMapModal() {
+    if (typeof L === "undefined" || !gpsMapCoords) return;
+    var backdrop = document.getElementById("mapModalBackdrop");
+    backdrop.style.display = "flex";
+    document.addEventListener("keydown", closeMapModalOnEsc);
+    if (gpsMapModalInstance) {
+        gpsMapModalInstance.remove();
+        gpsMapModalInstance = null;
+    }
+    setTimeout(function() {
+        var labels = zoomLabelsForDevice();
+        var lat = gpsMapCoords[0], lon = gpsMapCoords[1];
+        gpsMapModalInstance = L.map("gpsMapModal", { zoomControl: false }).setView([lat, lon], 15);
+        L.control.zoom({ zoomInTitle: labels[0], zoomOutTitle: labels[1] }).addTo(gpsMapModalInstance);
+        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "&copy; OpenStreetMap contributors",
+            maxZoom: 19
+        }).addTo(gpsMapModalInstance);
+        L.marker([lat, lon]).addTo(gpsMapModalInstance);
+        gpsMapModalInstance.invalidateSize();
+    }, 0);
+}
+
+
+function closeMapModal() {
+    document.getElementById("mapModalBackdrop").style.display = "none";
+    document.removeEventListener("keydown", closeMapModalOnEsc);
+}
+
+
+function closeMapModalOnEsc(e) {
+    if (e.key === "Escape") closeMapModal();
+}
+
+
 //dark/light mode toggle - should be saved to localstorage
 var savedTheme = localStorage.getItem("theme");
 if (savedTheme == "dark") {
@@ -370,5 +443,16 @@ function escapeHtml(str) {{
 
 //recommendations
 var recoList = document.getElementById("recoList");
+var recos = [];
+if (results.gps) recos.push("Remove GPS location data");
+    if (results.faces && results.faces.length > 0) recos.push("Blur faces before sharing");
+    if (results.qr) recos.push("Remove or blur the QR code");
+    if (exif.Make || exif.Model) recos.push("Strip device metadata");
+    if (recos.length == 0) recos.push("This image looks pretty safe to share as is");
+    recos.forEach(function(r) {
+    var li = document.createElement("li");
+    li.innerText = r;
+    recoList.appendChild(li);
+});
 
 }
